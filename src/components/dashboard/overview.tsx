@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useMemo } from "react";
@@ -15,6 +14,7 @@ import { format } from "date-fns";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useData } from "@/contexts/data-context";
 import { useAuth } from "@/contexts/auth-context";
+import Link from "next/link";
 
 const COLORS = ["hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))", "hsl(var(--chart-5))"];
 
@@ -336,12 +336,9 @@ const MobileOverview = React.memo(function MobileOverview() {
 });
 
 export function Overview() {
-  const isMobile = useIsMobile();
   const { loading } = useData();
-  
   if (loading) {
     return <OverviewSkeleton />;
   }
-  
-  return isMobile ? <MobileOverview /> : <DesktopOverview />;
+  return <MobileOverview />;
 }

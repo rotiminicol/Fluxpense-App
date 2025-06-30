@@ -1,23 +1,32 @@
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
-import { Hero } from "@/components/landing/hero";
-import { Features } from "@/components/landing/features";
-import { Testimonials } from "@/components/landing/testimonials";
-import { Pricing } from "@/components/landing/pricing";
-import { Faq } from "@/components/landing/faq";
+"use client";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useCallback } from "react";
 
-export default function Home() {
+export default function SplashScreen() {
+  const router = useRouter();
+  const handleContinue = useCallback(() => {
+    router.push("/welcome");
+  }, [router]);
+
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      <main className="flex-grow">
-        <Hero />
-        <Features />
-        <Testimonials />
-        <Pricing />
-        <Faq />
-      </main>
-      <Footer />
+    <div className="flex flex-col items-center justify-center h-screen w-full bg-background px-6">
+      <Image
+        src="/Fluxpense Logo – Blue and Green with Arrow Icon.png"
+        alt="Fluxpense Logo"
+        width={120}
+        height={120}
+        className="mb-8 animate-subtle-float"
+        priority
+      />
+      <h1 className="text-3xl font-black text-center mb-4 text-primary font-headline">Fluxpense</h1>
+      <p className="text-base text-center text-muted-foreground mb-10">Smart Expense Tracking, Budgeting & Analytics</p>
+      <button
+        className="w-full py-3 rounded-xl bg-primary text-white font-bold text-lg button-glow active:scale-95 transition-transform"
+        onClick={handleContinue}
+      >
+        Continue
+      </button>
     </div>
   );
 }

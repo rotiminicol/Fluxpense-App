@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -77,56 +76,54 @@ export default function OnboardingPage() {
     setIsFinishing(true);
     try {
       await completeOnboarding();
-      // Only redirect on success
       setTimeout(() => {
         router.push('/dashboard/overview');
-      }, 1500); // Give time for toast to show
+      }, 800);
     } catch (error) {
-      // Error is already toasted in the context.
-      // We just need to reset the button state.
       setIsFinishing(false);
     }
   }
+
+  const skipOnboarding = () => {
+    router.push('/dashboard/overview');
+  };
 
   const progress = ((currentStep + 1) / steps.length) * 100;
   const ActiveIcon = steps[currentStep].icon;
 
   return (
-    <div className="relative h-screen w-full flex flex-col md:flex-row overflow-hidden">
-      <div
-        className="hidden md:block md:w-1/2 h-full relative"
-      >
-        <Image
-          src={steps[currentStep].image}
-          alt={steps[currentStep].title}
-          fill
-          className="object-cover"
-          priority
-        />
-      </div>
-      <div className="absolute inset-0 z-0 md:hidden">
+    <div className="relative h-screen w-full flex flex-col overflow-hidden bg-background">
+      {/* Mobile background image */}
+      <div className="absolute inset-0 z-0">
         <Image
           src={steps[currentStep].image}
           alt={steps[currentStep].title + ' Mobile Background'}
           fill
-          className="w-full h-full object-cover absolute top-0 left-0 opacity-80 blur-sm"
+          className="w-full h-full object-cover opacity-80 blur-sm"
           priority
         />
         <div className="absolute inset-0 bg-black/40" />
       </div>
-      <div className="relative z-10 flex w-full md:w-1/2 h-full items-center justify-center p-4 sm:p-6 md:p-8 overflow-y-auto no-scrollbar">
+      {/* Skip button */}
+      {currentStep < steps.length - 1 && (
+        <button
+          className="absolute top-6 right-6 z-20 text-white bg-black/40 px-4 py-2 rounded-full font-bold text-sm active:scale-95 transition"
+          onClick={skipOnboarding}
+        >
+          Skip
+        </button>
+      )}
+      <div className="relative z-10 flex w-full h-full items-center justify-center p-4 overflow-y-auto no-scrollbar">
         <motion.div
           key={steps[currentStep].id}
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="w-full md:max-w-xl flex flex-col justify-center"
+          className="w-full max-w-sm flex flex-col justify-center"
         >
           <Card className="w-full relative glassmorphism animate-in fade-in-0 slide-in-from-bottom-8 duration-500">
             <div className="flex flex-col items-center mb-4">
-              <Link href="/">
-                <Logo variant="default" size="lg" className="cursor-pointer" />
-              </Link>
+              <Logo variant="default" size="lg" className="cursor-pointer" />
             </div>
             <CardHeader>
               <div className="flex items-center justify-between mb-4">
@@ -138,7 +135,7 @@ export default function OnboardingPage() {
               </div>
               <Progress value={progress} className="w-full" />
             </CardHeader>
-            <div className="overflow-hidden relative h-80 flex items-center">
+            <div className="overflow-hidden relative h-64 flex items-center">
               <AnimatePresence initial={false} custom={direction}>
                 <motion.div
                   key={currentStep}
@@ -147,30 +144,32 @@ export default function OnboardingPage() {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="absolute w-full px-6"
+                  className="absolute w-full px-4"
                 >
                   <StepContent step={currentStep} />
                 </motion.div>
               </AnimatePresence>
             </div>
-            <CardFooter className="flex flex-col md:flex-row justify-between border-t pt-6 gap-4 md:gap-0">
-              <Button variant="outline" onClick={prevStep} disabled={currentStep === 0 || isFinishing || loading} className="w-full md:w-auto">
-                <ArrowLeft className="mr-2" /> Previous
-              </Button>
-              {currentStep < steps.length - 2 ? (
-                <Button onClick={nextStep} className="w-full md:w-auto button-glow">
-                  Next <ArrowRight className="ml-2" />
+            <CardFooter className="flex flex-col justify-between border-t pt-6 gap-4">
+              <div className="flex w-full gap-2">
+                <Button variant="outline" onClick={prevStep} disabled={currentStep === 0 || isFinishing || loading} className="w-1/2">
+                  <ArrowLeft className="mr-2" /> Previous
                 </Button>
-              ) : currentStep === steps.length - 2 ? (
-                <Button onClick={nextStep} className="w-full md:w-auto button-glow">
-                  Finish Setup <Check className="ml-2" />
-                </Button>
-              ) : (
-                <Button onClick={finishOnboarding} className="w-full md:w-auto button-glow bg-green-500 hover:bg-green-600" disabled={isFinishing || loading}>
-                  {isFinishing ? "Redirecting..." : "Go to Dashboard"}
-                  {!isFinishing && <ArrowRight className="ml-2" />}
-                </Button>
-              )}
+                {currentStep < steps.length - 2 ? (
+                  <Button onClick={nextStep} className="w-1/2 button-glow">
+                    Next <ArrowRight className="ml-2" />
+                  </Button>
+                ) : currentStep === steps.length - 2 ? (
+                  <Button onClick={nextStep} className="w-1/2 button-glow">
+                    Finish Setup <Check className="ml-2" />
+                  </Button>
+                ) : (
+                  <Button onClick={finishOnboarding} className="w-full button-glow bg-green-500 hover:bg-green-600" disabled={isFinishing || loading}>
+                    {isFinishing ? "Redirecting..." : "Go to Dashboard"}
+                    {!isFinishing && <ArrowRight className="ml-2" />}
+                  </Button>
+                )}
+              </div>
             </CardFooter>
           </Card>
         </motion.div>
