@@ -28,8 +28,8 @@ export function Footer() {
   };
 
   return (
-    <footer className="relative bg-gradient-to-b from-background to-muted/10 border-t border-border/40 backdrop-blur-sm overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary/5" />
+    <footer className="relative bg-charcoal border-t border-champagne/40 backdrop-blur-sm overflow-hidden text-ivory">
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-emerald/10" />
       <div className="absolute inset-0 bg-grid-pattern opacity-5" />
       <div className="container max-w-screen-2xl relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 py-12 md:py-16 px-4 sm:px-6 lg:px-8">
@@ -40,7 +40,7 @@ export function Footer() {
                 <Logo variant="bird" size="lg" className="drop-shadow-md" />
               </div>
             </div>
-            <p className="text-muted-foreground text-sm leading-relaxed pl-1 border-l-2 border-primary/20 pl-3">
+            <p className="text-champagne text-sm leading-relaxed pl-1 border-l-2 border-emerald/40 pl-3">
               Effortless expense management powered by AI. Take control of your finances with our intuitive platform.
             </p>
             <div className="flex space-x-4 pt-2">
@@ -65,7 +65,7 @@ export function Footer() {
                   key={social.label}
                   href={social.href}
                   aria-label={social.label}
-                  className="relative p-2 text-muted-foreground hover:text-foreground transition-all duration-300 group"
+                  className="relative p-2 text-champagne hover:text-emerald transition-all duration-300 group"
                 >
                   <span className="absolute inset-0 rounded-full bg-accent/0 group-hover:bg-accent/20 transition-all duration-300" />
                   <span className="relative z-10">
@@ -77,7 +77,7 @@ export function Footer() {
           </div>
 
           <div className="space-y-5">
-            <h4 className="font-semibold text-foreground text-base relative inline-block">
+            <h4 className="font-semibold text-emerald text-base relative inline-block">
               Product
               <span className="absolute -bottom-1 left-0 w-8 h-0.5 bg-primary/50 rounded-full" />
             </h4>
@@ -91,7 +91,7 @@ export function Footer() {
                 <li key={item.name} className="group">
                   <Link 
                     href={item.href}
-                    className="flex items-center text-muted-foreground hover:text-foreground text-sm transition-all duration-300 group-hover:translate-x-1"
+                    className="flex items-center text-champagne hover:text-emerald text-sm transition-all duration-300 group-hover:translate-x-1"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-primary/0 group-hover:bg-primary mr-2 transition-all duration-300" />
                     {item.name}
@@ -102,7 +102,7 @@ export function Footer() {
           </div>
 
           <div className="space-y-5">
-            <h4 className="font-semibold text-foreground text-base relative inline-block">
+            <h4 className="font-semibold text-emerald text-base relative inline-block">
               Company
               <span className="absolute -bottom-1 left-0 w-8 h-0.5 bg-primary/50 rounded-full" />
             </h4>
@@ -116,7 +116,7 @@ export function Footer() {
                 <li key={item.name} className="group">
                   <Link 
                     href={item.href}
-                    className="flex items-center text-muted-foreground hover:text-foreground text-sm transition-all duration-300 group-hover:translate-x-1"
+                    className="flex items-center text-champagne hover:text-emerald text-sm transition-all duration-300 group-hover:translate-x-1"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-primary/0 group-hover:bg-primary mr-2 transition-all duration-300" />
                     {item.name}
@@ -127,11 +127,11 @@ export function Footer() {
           </div>
 
           <div className="space-y-5">
-            <h4 className="font-semibold text-foreground text-base relative inline-block">
+            <h4 className="font-semibold text-emerald text-base relative inline-block">
               Stay Updated
               <span className="absolute -bottom-1 left-0 w-8 h-0.5 bg-primary/50 rounded-full" />
             </h4>
-            <p className="text-muted-foreground text-sm leading-relaxed">
+            <p className="text-champagne text-sm leading-relaxed">
               Get the latest news, updates and special offers delivered to your inbox.
             </p>
             <form className="space-y-3">
@@ -140,17 +140,17 @@ export function Footer() {
                   <Input 
                     type="email" 
                     placeholder="Your email address" 
-                    className="w-full bg-background/80 backdrop-blur-sm border-border/50 focus:border-primary/50 transition-all pr-24"
+                    className="w-full bg-charcoal/80 backdrop-blur-sm border-champagne/50 focus:border-emerald/50 transition-all pr-24 text-ivory"
                     required
                   />
                   <Button 
                     type="submit" 
-                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 px-4 text-xs font-medium bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 transition-all duration-300"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 px-4 text-xs font-medium bg-gradient-to-r from-emerald to-champagne hover:from-emerald/90 hover:to-champagne/80 transition-all duration-300 text-charcoal"
                   >
                     Subscribe
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">
+                <p className="text-xs text-champagne leading-relaxed">
                   We respect your privacy. Unsubscribe at any time. No spam, ever.
                 </p>
               </div>
@@ -160,20 +160,20 @@ export function Footer() {
 
         <div className="border-t border-border/20 py-6 px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-muted-foreground text-center md:text-left">
+            <p className="text-sm text-champagne text-center md:text-left">
               © {new Date().getFullYear()} Fluxpense. All rights reserved.
             </p>
             <div className="flex items-center space-x-6">
               <Link 
                 href="/privacy" 
-                className="text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors hover:underline underline-offset-4"
+                className="text-xs md:text-sm text-champagne hover:text-emerald transition-colors hover:underline underline-offset-4"
               >
                 Privacy Policy
               </Link>
-              <span className="text-muted-foreground/50">•</span>
+              <span className="text-champagne/50">•</span>
               <Link 
                 href="/terms" 
-                className="text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors hover:underline underline-offset-4"
+                className="text-xs md:text-sm text-champagne hover:text-emerald transition-colors hover:underline underline-offset-4"
               >
                 Terms of Service
               </Link>
@@ -185,7 +185,7 @@ export function Footer() {
       <button
         onClick={scrollToTop}
         aria-label="Scroll to top"
-        className={`fixed bottom-8 right-8 p-3 rounded-full bg-primary/90 text-white shadow-lg hover:bg-primary transition-all duration-300 transform ${
+        className={`fixed bottom-8 right-8 p-3 rounded-full bg-emerald/90 text-ivory shadow-lg hover:bg-emerald transition-all duration-300 transform ${
           showScroll ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
         }`}
       >

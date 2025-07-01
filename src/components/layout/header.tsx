@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -60,9 +59,9 @@ export function Header() {
       className={cn(
         'sticky top-0 z-50 w-full transition-all duration-300 border-b',
         isScrolled 
-          ? 'bg-background/90 backdrop-blur-md border-border/20 shadow-sm' 
-          : 'bg-background/80 backdrop-blur-sm border-transparent',
-        'supports-[backdrop-filter]:bg-background/80'
+          ? 'bg-charcoal/95 backdrop-blur-md border-champagne/30 shadow-md' 
+          : 'bg-charcoal/80 backdrop-blur-sm border-transparent',
+        'supports-[backdrop-filter]:bg-charcoal/80'
       )}
     >
       <div className="container flex h-20 max-w-screen-2xl items-center justify-between px-4 md:px-8">
@@ -154,15 +153,15 @@ export function Header() {
                     onMouseEnter={() => link.submenu && setOpenDropdown(link.href)}
                     className={cn(
                       'px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200',
-                      'text-foreground/80 hover:text-primary hover:bg-foreground/5',
+                      'text-ivory/90 hover:text-emerald hover:bg-champagne/20',
                       'flex items-center gap-1',
-                      openDropdown === link.href && 'text-primary bg-foreground/5'
+                      openDropdown === link.href && 'text-emerald bg-champagne/10'
                     )}
                   >
                     {link.label}
                     {link.submenu && (
                       <ChevronDown className={cn(
-                        'h-4 w-4 ml-0.5 transition-transform duration-200',
+                        'h-4 w-4 ml-0.5 transition-transform duration-200 text-champagne',
                         openDropdown === link.href ? 'rotate-180' : ''
                       )} />
                     )}
@@ -197,7 +196,7 @@ export function Header() {
             ))}
             
             <div className="flex items-center gap-2 ml-4">
-              <Button asChild variant="ghost" className="h-10 px-5 rounded-xl font-medium">
+              <Button asChild variant="ghost" className="h-10 px-5 rounded-xl font-medium text-emerald hover:bg-champagne/20">
                   <Link href="/auth">Login</Link>
               </Button>
               <Button 

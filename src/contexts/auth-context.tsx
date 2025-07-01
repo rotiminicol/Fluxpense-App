@@ -98,21 +98,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     setToken(null);
     localStorage.removeItem('authToken');
-    router.push('/auth');
+    router.push('/welcome');
   };
   
   const completeOnboarding = async () => {
-    // Local-only onboarding completion (no Xano call)
-    if (!user) {
+    if (!user || !token) {
       toast({ variant: 'destructive', title: 'Onboarding Error', description: 'No user found.' });
       throw new Error('No user found');
     }
     setLoading(true);
     try {
-      // Update user state locally
-      const updatedUser = { ...user, onboarding_complete: true };
+      // Call correct backend endpoint to mark onboarding as complete
+      await fetch(`https://x8ki-letl-twmt.n7.xano.io/api:mVJnFa8M/user/${user.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ onboarding_complete: true }),
+      });
+      // Fetch updated user
+      const res = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:T_4B5T-n/auth/me', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const updatedUser = await res.json();
       setUser(updatedUser);
-      // Optionally persist in localStorage
       localStorage.setItem('user', JSON.stringify(updatedUser));
       toast({ title: 'Setup Complete!', description: 'Welcome to your new dashboard.' });
     } catch (error) {

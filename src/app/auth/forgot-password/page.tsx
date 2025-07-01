@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,11 +8,24 @@ import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { motion } from "framer-motion";
 import Image from 'next/image';
+import { ArrowLeft } from "lucide-react";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [particles, setParticles] = useState<Array<{id: number, x: number, y: number, size: number, delay: number}>>([]);
+
+  useEffect(() => {
+    const particlesArray = Array.from({ length: 30 }).map((_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 3 + 1,
+      delay: Math.random() * 2
+    }));
+    setParticles(particlesArray);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,78 +38,81 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full flex flex-col md:flex-row">
-      {/* Image Section (Left on desktop, background on mobile) */}
-      <div
-        className="hidden md:block md:w-1/2 h-screen"
-        style={{ minHeight: '100vh' }}
+    <div className="relative flex flex-col items-center justify-center min-h-screen w-full bg-gradient-to-br from-emerald via-charcoal to-champagne overflow-hidden">
+      {/* Back Button */}
+      <button
+        className="absolute top-5 left-4 z-20 flex items-center gap-2 px-3 py-2 rounded-full bg-emerald text-ivory shadow-md hover:bg-emerald/90 transition-all duration-200"
+        onClick={() => window.history.back()}
+        aria-label="Back"
       >
-        <Image
-          src="https://placehold.co/1000x1200.png"
-          alt="Forgot Password Visual"
-          fill
-          className="object-cover"
-          priority
-          data-ai-hint="abstract gradient"
-        />
+        <ArrowLeft className="w-5 h-5" />
+        <span className="font-semibold text-base">Back</span>
+      </button>
+      {/* Animated particle background */}
+      <div className="absolute inset-0 overflow-hidden">
+        {particles.map((particle) => (
+          <motion.div
+            key={particle.id}
+            className="absolute rounded-full bg-champagne/20"
+            style={{
+              left: `${particle.x}%`,
+              top: `${particle.y}%`,
+              width: `${particle.size}px`,
+              height: `${particle.size}px`
+            }}
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: [0, 0.6, 0],
+              y: [0, -50],
+              x: [0, (Math.random() - 0.5) * 30]
+            }}
+            transition={{
+              duration: 10 + Math.random() * 20,
+              delay: particle.delay,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          />
+        ))}
       </div>
-      {/* Mobile background image */}
-      <div className="absolute inset-0 z-0 md:hidden">
-        <Image
-          src="https://placehold.co/600x800.png"
-          alt="Forgot Password Mobile Background"
-          fill
-          className="w-full h-full object-cover absolute top-0 left-0 opacity-80 blur-sm"
-          priority
-          data-ai-hint="abstract gradient"
-        />
-        <div className="absolute inset-0 bg-black/40" />
-      </div>
-      {/* Form Section (Right on desktop, centered on mobile) */}
-      <div className="relative z-10 flex w-full md:w-1/2 min-h-screen items-center justify-center p-4 sm:p-6 md:p-8">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="w-full max-w-md mx-auto flex flex-col justify-center h-full"
-        >
-          <Card className="glassmorphism w-full">
-            <CardHeader className="text-center pb-2">
-              <Link href="/auth" className="flex justify-center mb-4">
-                <Logo variant="default" size="lg" />
-              </Link>
-              <CardTitle className="text-2xl font-bold mb-1">Forgot Password?</CardTitle>
-              <CardDescription className="mb-2">Enter your email to receive a password reset link.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {submitted ? (
-                <div className="text-center py-8">
-                  <div className="text-green-500 font-semibold mb-2">Check your email!</div>
-                  <div className="text-muted-foreground text-sm mb-6">If an account exists for <span className="font-medium text-foreground">{email}</span>, you will receive a password reset link shortly.</div>
-                  <Link href="/auth" className="text-primary underline font-medium">Back to Login</Link>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="forgot-email">Email</Label>
-                    <Input
-                      id="forgot-email"
-                      type="email"
-                      placeholder="you@example.com"
-                      value={email}
-                      onChange={e => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  {error && <div className="text-red-500 text-sm font-medium mt-1">{error}</div>}
-                  <Button type="submit" className="w-full button-glow mt-2">Send Reset Link</Button>
-                  <Link href="/auth" className="text-xs text-primary underline text-center mt-2">Back to Login</Link>
-                </form>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
+      {/* Full Screen Form */}
+      <motion.div
+        className="relative z-10 w-full h-full flex flex-col items-center justify-center px-4 py-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
+        <div className="w-full h-full flex flex-col items-center justify-center bg-ivory/90 rounded-none border-none shadow-none p-0">
+          <Logo variant="default" size="lg" className="mb-6" />
+          <h2 className="text-2xl font-bold mb-2 text-emerald text-center">Forgot Password?</h2>
+          <p className="mb-6 text-champagne text-center">Enter your email to receive a password reset link.</p>
+          {submitted ? (
+            <div className="text-center py-8">
+              <div className="text-emerald font-semibold mb-2">Check your email!</div>
+              <div className="text-champagne text-sm mb-6">If an account exists for <span className="font-medium text-charcoal">{email}</span>, you will receive a password reset link shortly.</div>
+              <a href="/auth/login" className="text-emerald underline font-medium">Back to Login</a>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full max-w-md mx-auto">
+              <div className="space-y-2 w-full">
+                <label htmlFor="forgot-email" className="text-champagne">Email</label>
+                <input
+                  id="forgot-email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 rounded-lg bg-charcoal/80 border border-champagne text-ivory placeholder-champagne focus:outline-none focus:ring-2 focus:ring-emerald transition-all duration-300 hover:border-emerald"
+                />
+              </div>
+              {error && <div className="text-red-500 text-sm font-medium mt-1">{error}</div>}
+              <button type="submit" className="w-full py-3 rounded-lg bg-gradient-to-r from-emerald to-champagne text-black font-semibold text-base shadow-md hover:bg-emerald hover:text-white transition-all duration-300 border-2 border-black mt-2">Send Reset Link</button>
+              <a href="/auth/login" className="text-xs text-emerald underline text-center mt-2">Back to Login</a>
+            </form>
+          )}
+        </div>
+      </motion.div>
     </div>
   );
 }

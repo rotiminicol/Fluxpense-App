@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,7 @@ const slideVariants = {
   hidden: (direction: number) => ({
     opacity: 0,
     x: direction > 0 ? "50%" : "-50%",
-    scale: 0.95
+    scale: 0.95,
   }),
   visible: {
     opacity: 1,
@@ -46,17 +46,26 @@ const slideVariants = {
     x: direction < 0 ? "50%" : "-50%",
     scale: 0.95,
     transition: {
-      duration: 0.2
+      duration: 0.2,
     },
   }),
 };
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { completeOnboarding, loading } = useAuth();
+  const { completeOnboarding, loading, user } = useAuth();
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isFinishing, setIsFinishing] = useState(false);
+
+  // Redirect logic for onboarding access
+  useEffect(() => {
+    if (!user) {
+      router.replace("/auth/login");
+    } else if (user.onboarding_complete) {
+      router.replace("/dashboard/overview");
+    }
+  }, [user, router]);
 
   const nextStep = () => {
     setDirection(1);
@@ -71,43 +80,52 @@ export default function OnboardingPage() {
       setCurrentStep(currentStep - 1);
     }
   };
-  
+
   const finishOnboarding = async () => {
     setIsFinishing(true);
     try {
       await completeOnboarding();
       setTimeout(() => {
-        router.push('/dashboard/overview');
+        router.push("/dashboard/overview");
       }, 800);
     } catch (error) {
       setIsFinishing(false);
     }
-  }
+  };
 
   const skipOnboarding = () => {
-    router.push('/dashboard/overview');
+    router.push("/dashboard/overview");
   };
 
   const progress = ((currentStep + 1) / steps.length) * 100;
   const ActiveIcon = steps[currentStep].icon;
 
   return (
-    <div className="relative h-screen w-full flex flex-col overflow-hidden bg-background">
-      {/* Mobile background image */}
-      <div className="absolute inset-0 z-0">
+    <div className="relative flex flex-col items-center justify-center min-h-screen w-full bg-gradient-to-br from-emerald via-charcoal to-champagne overflow-hidden">
+      {/* Back Button */}
+      <button
+        className="absolute top-5 left-4 z-20 flex items-center gap-2 px-3 py-2 rounded-full bg-emerald text-ivory shadow-md hover:bg-emerald/90 transition-all duration-200"
+        onClick={() => router.back()}
+        aria-label="Back"
+      >
+        <ArrowLeft className="w-5 h-5" />
+        <span className="font-semibold text-base">Back</span>
+      </button>
+      {/* Subtle background image overlay */}
+      <div className="absolute inset-0 z-0 opacity-20">
         <Image
           src={steps[currentStep].image}
-          alt={steps[currentStep].title + ' Mobile Background'}
+          alt={steps[currentStep].title + " Background"}
           fill
-          className="w-full h-full object-cover opacity-80 blur-sm"
+          className="object-cover blur-md transition-opacity duration-500"
           priority
         />
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-charcoal/60" />
       </div>
       {/* Skip button */}
       {currentStep < steps.length - 1 && (
         <button
-          className="absolute top-6 right-6 z-20 text-white bg-black/40 px-4 py-2 rounded-full font-bold text-sm active:scale-95 transition"
+          className="absolute top-6 right-6 z-20 text-champagne bg-charcoal/60 px-4 py-2 rounded-full font-semibold text-sm hover:bg-emerald/70 hover:text-ivory transition-all duration-300"
           onClick={skipOnboarding}
         >
           Skip
@@ -118,24 +136,24 @@ export default function OnboardingPage() {
           key={steps[currentStep].id}
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="w-full max-w-sm flex flex-col justify-center"
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="w-full h-full flex flex-col justify-center items-center"
         >
-          <Card className="w-full relative glassmorphism animate-in fade-in-0 slide-in-from-bottom-8 duration-500">
-            <div className="flex flex-col items-center mb-4">
-              <Logo variant="default" size="lg" className="cursor-pointer" />
+          <div className="w-full h-full flex flex-col items-center justify-center bg-ivory/90 rounded-2xl shadow-lg p-6 max-w-md mx-auto">
+            <div className="flex flex-col items-center mb-6">
+              <Logo variant="default" size="lg" className="cursor-pointer hover:scale-105 transition-transform duration-300" />
             </div>
-            <CardHeader>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-medium text-muted-foreground">Step {currentStep + 1} of {steps.length}</span>
-                <div className="flex items-center gap-2">
-                  <ActiveIcon className="h-5 w-5 text-primary" />
-                  <CardTitle className="text-2xl font-bold tracking-tight">{steps[currentStep].title}</CardTitle>
-                </div>
+            <div className="flex items-center justify-between mb-6 w-full">
+              <span className="text-sm font-medium text-champagne">Step {currentStep + 1} of {steps.length}</span>
+              <div className="flex items-center gap-2">
+                <ActiveIcon className="h-5 w-5 text-emerald" />
+                <span className="text-2xl font-bold tracking-tight text-emerald hover:text-champagne transition-colors duration-300">
+                  {steps[currentStep].title}
+                </span>
               </div>
-              <Progress value={progress} className="w-full" />
-            </CardHeader>
-            <div className="overflow-hidden relative h-64 flex items-center">
+            </div>
+            <Progress value={progress} className="w-full bg-champagne/20 mb-8" />
+            <div className="overflow-visible relative flex items-center w-full min-h-[180px] mb-8">
               <AnimatePresence initial={false} custom={direction}>
                 <motion.div
                   key={currentStep}
@@ -144,34 +162,65 @@ export default function OnboardingPage() {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="absolute w-full px-4"
+                  className="w-full"
                 >
-                  <StepContent step={currentStep} />
+                  <div className="w-full flex flex-col items-center justify-center gap-6">
+                    <StepContent step={currentStep} />
+                  </div>
                 </motion.div>
               </AnimatePresence>
             </div>
-            <CardFooter className="flex flex-col justify-between border-t pt-6 gap-4">
-              <div className="flex w-full gap-2">
-                <Button variant="outline" onClick={prevStep} disabled={currentStep === 0 || isFinishing || loading} className="w-1/2">
-                  <ArrowLeft className="mr-2" /> Previous
-                </Button>
-                {currentStep < steps.length - 2 ? (
-                  <Button onClick={nextStep} className="w-1/2 button-glow">
-                    Next <ArrowRight className="ml-2" />
-                  </Button>
-                ) : currentStep === steps.length - 2 ? (
-                  <Button onClick={nextStep} className="w-1/2 button-glow">
-                    Finish Setup <Check className="ml-2" />
-                  </Button>
-                ) : (
-                  <Button onClick={finishOnboarding} className="w-full button-glow bg-green-500 hover:bg-green-600" disabled={isFinishing || loading}>
-                    {isFinishing ? "Redirecting..." : "Go to Dashboard"}
-                    {!isFinishing && <ArrowRight className="ml-2" />}
-                  </Button>
-                )}
-              </div>
-            </CardFooter>
-          </Card>
+            <div className="flex flex-row justify-between items-center border-t border-champagne/20 pt-6 gap-4 w-full mt-2">
+              <button
+                type="button"
+                onClick={prevStep}
+                disabled={currentStep === 0 || isFinishing || loading}
+                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-full bg-gradient-to-r from-emerald to-champagne text-black font-semibold text-lg shadow-md hover:bg-emerald hover:text-white transition-all duration-300 border-2 border-black disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ArrowLeft className="w-5 h-5" /> Previous
+              </button>
+              {currentStep < steps.length - 2 ? (
+                <button
+                  type="button"
+                  onClick={nextStep}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-full bg-gradient-to-r from-emerald to-champagne text-black font-semibold text-lg shadow-md hover:bg-emerald hover:text-white transition-all duration-300 border-2 border-black"
+                >
+                  Next <ArrowRight className="w-5 h-5" />
+                </button>
+              ) : currentStep === steps.length - 2 ? (
+                <button
+                  type="button"
+                  onClick={nextStep}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-full bg-gradient-to-r from-emerald to-champagne text-black font-semibold text-lg shadow-md hover:bg-emerald hover:text-white transition-all duration-300 border-2 border-black"
+                >
+                  Finish Setup <Check className="w-5 h-5" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={finishOnboarding}
+                  className="flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-full bg-gradient-to-r from-emerald to-champagne text-black font-bold text-xl shadow-lg border-2 border-black relative overflow-hidden transition-all duration-300 focus:ring-4 focus:ring-emerald/40 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed animate-glow"
+                  disabled={isFinishing || loading}
+                  style={{ boxShadow: '0 0 16px 2px #04630755' }}
+                >
+                  {isFinishing ? (
+                    <span className="flex items-center gap-2">
+                      <svg className="animate-spin h-5 w-5 text-emerald" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
+                      Redirecting...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      Go to Dashboard
+                      <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 300, damping: 15 }}>
+                        <Check className="w-6 h-6 text-emerald ml-1 animate-bounce" />
+                      </motion.span>
+                      <ArrowRight className="w-5 h-5 ml-1" />
+                    </span>
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
         </motion.div>
       </div>
     </div>
@@ -182,28 +231,28 @@ function StepContent({ step }: { step: number }) {
   switch (step) {
     case 0:
       return (
-        <div className="text-center space-y-4">
-          <h3 className="text-xl font-semibold">Welcome to Fluxpense!</h3>
-          <p className="text-muted-foreground">Let's get your account set up in just a few quick steps. We're excited to help you take control of your finances.</p>
+        <div className="text-center space-y-4 max-w-xs mx-auto">
+          <h3 className="text-xl font-semibold text-emerald">Welcome to Fluxpense!</h3>
+          <p className="text-champagne">Let's get your account set up in just a few quick steps. We're excited to help you take control of your finances.</p>
         </div>
       );
     case 1:
       return (
-        <div className="space-y-4">
-          <Label className="text-lg">How will you be using Fluxpense?</Label>
-          <RadioGroup defaultValue="personal" className="space-y-2">
-            <Label className="flex items-center gap-4 p-4 border rounded-lg cursor-pointer hover:bg-muted/50">
+        <div className="space-y-4 w-full max-w-xs mx-auto">
+          <Label className="text-lg text-emerald">How will you be using Fluxpense?</Label>
+          <RadioGroup defaultValue="personal" className="space-y-3">
+            <Label className="flex items-center gap-4 p-4 border border-champagne/30 rounded-lg hover:bg-emerald/20 transition-all duration-300">
               <RadioGroupItem value="personal" id="personal" />
               <div>
-                <p className="font-semibold">Personal Use</p>
-                <p className="text-sm text-muted-foreground">For tracking my own expenses and budgets.</p>
+                <p className="font-semibold text-emerald">Personal Use</p>
+                <p className="text-sm text-champagne">For tracking my own expenses and budgets.</p>
               </div>
             </Label>
-            <Label className="flex items-center gap-4 p-4 border rounded-lg cursor-pointer hover:bg-muted/50">
+            <Label className="flex items-center gap-4 p-4 border border-champagne/30 rounded-lg hover:bg-emerald/20 transition-all duration-300">
               <RadioGroupItem value="business" id="business" />
               <div>
-                <p className="font-semibold">Business/Team</p>
-                <p className="text-sm text-muted-foreground">For managing expenses for my company or team.</p>
+                <p className="font-semibold text-emerald">Business/Team</p>
+                <p className="text-sm text-champagne">For managing expenses for my company or team.</p>
               </div>
             </Label>
           </RadioGroup>
@@ -211,35 +260,42 @@ function StepContent({ step }: { step: number }) {
       );
     case 2:
       return (
-        <div className="text-center space-y-4">
-          <h3 className="text-xl font-semibold">Automate with Email</h3>
-          <p className="text-muted-foreground">Connect your email to automatically import receipts from services like Uber, Amazon, and more. You can do this later from the Integrations page.</p>
-          <Button>Connect Gmail</Button>
+        <div className="text-center space-y-4 max-w-xs mx-auto">
+          <h3 className="text-xl font-semibold text-emerald">Automate with Email</h3>
+          <p className="text-champagne">Connect your email to automatically import receipts from services like Uber, Amazon, and more. You can do this later from the Integrations page.</p>
+          <Button className="bg-emerald hover:bg-emerald/90 text-ivory transition-all duration-300 w-full max-w-xs mx-auto">Connect Gmail</Button>
         </div>
       );
     case 3:
       return (
-        <div className="space-y-4">
-            <h3 className="text-xl font-semibold">What are your financial goals?</h3>
-            <Textarea placeholder="e.g., Save for a vacation, reduce monthly spending on dining out, pay off debt..." rows={4}/>
+        <div className="space-y-4 w-full max-w-xs mx-auto">
+          <h3 className="text-xl font-semibold text-emerald">What are your financial goals?</h3>
+          <Textarea
+            placeholder="e.g., Save for a vacation, reduce monthly spending on dining out, pay off debt..."
+            className="bg-charcoal border-champagne/30 text-emerald placeholder-champagne focus:ring-emerald transition-all duration-300 w-full"
+            rows={4}
+          />
         </div>
       );
     case 4:
       return (
-        <div className="space-y-4">
-            <h3 className="text-xl font-semibold">Invite your team (optional)</h3>
-            <p className="text-sm text-muted-foreground">Enter emails separated by commas to invite team members.</p>
-            <Input placeholder="friend@example.com, colleague@example.com" />
+        <div className="space-y-4 w-full max-w-xs mx-auto">
+          <h3 className="text-xl font-semibold text-emerald">Invite your team (optional)</h3>
+          <p className="text-sm text-champagne">Enter emails separated by commas to invite team members.</p>
+          <Input
+            placeholder="friend@example.com, colleague@example.com"
+            className="bg-charcoal border-champagne/30 text-emerald placeholder-champagne focus:ring-emerald transition-all duration-300 w-full"
+          />
         </div>
       );
     case 5:
       return (
-        <div className="text-center space-y-4 py-8">
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1, transition: { delay: 0.2, type: 'spring' } }}>
-                <PartyPopper className="h-16 w-16 text-green-500 mx-auto" />
-            </motion.div>
-            <h3 className="text-2xl font-bold">You're All Set!</h3>
-            <p className="text-muted-foreground">Your account is ready. Let's get your finances organized.</p>
+        <div className="text-center space-y-4 py-8 max-w-xs mx-auto">
+          <motion.div initial={{ scale: 0 }} animate={{ scale: 1, transition: { delay: 0.2, type: "spring" } }}>
+            <PartyPopper className="h-16 w-16 text-emerald-500 mx-auto" />
+          </motion.div>
+          <h3 className="text-2xl font-bold text-emerald">You're All Set!</h3>
+          <p className="text-champagne">Your account is ready. Let's get your finances organized.</p>
         </div>
       );
     default:

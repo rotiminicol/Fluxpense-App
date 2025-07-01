@@ -1,4 +1,3 @@
-
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
@@ -24,7 +23,7 @@ const sizeVariants = {
   xl: { width: 64, height: 64, textSize: "text-3xl" }
 };
 
-export function Logo({ className, variant = "default", size = "md", showText = true }: LogoProps) {
+export function Logo({ className = "", variant = "default", size = "md", showText = false }: LogoProps) {
   const logoSrc = logoVariants[variant];
   const dimensions = sizeVariants[size];
 
